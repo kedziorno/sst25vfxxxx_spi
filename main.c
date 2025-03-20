@@ -7,6 +7,7 @@
 
 // pytest_c_testrunner
 #include "test_macros_uint32.h"
+#include "test_macros_int32.h"
 
 #define DEBUG //printf ("Call %s\n", __FUNCTION__)
 
@@ -428,6 +429,42 @@ uint32_t read_id_1e (uint8_t read_id_command, uint8_t read_id_type) { // SEND 0x
   return read_id;
 }
 
+SPI_HandleTypeDef transmit_when_disabled () {
+  disableFlash ();
+  uint8_t pData = 0xff;
+  //enableFlash ();
+  return HAL_SPI_Transmit (&hspi1, &pData, 1, 0xffff);
+}
+
+SPI_HandleTypeDef receive_when_disabled () {
+  disableFlash ();
+  uint8_t pData = 0xff;
+  //enableFlash ();
+  return HAL_SPI_Receive (&hspi1, &pData, 1, 0xffff);
+}
+
+int8_t helper_function_1 () {
+  // *** Debug ***
+  // return -1
+  int8_t data;
+  enableFlash();
+  SendByte (0xfe);
+  data = ReceiveByte ();
+  printf ("%d\n", data);
+  disableFlash();
+  return data;
+}
+
+int8_t helper_function_2 () {
+  // Flash is disabled now
+  int8_t data;
+  disableFlash ();
+  SendByte (0xfe);
+  data = ReceiveByte ();
+  printf ("%d\n", data);
+  return data;
+}
+
 int
 main (int argc, char *argv[]) {
   // JEDEC
@@ -458,18 +495,16 @@ main (int argc, char *argv[]) {
   ASSERT_EQUAL_UINT32     (read_id_1c (READ_ID_2, 0x00), 0x00000000, "read id 1c - SEND 0xAB, READ_ID ADD 0, break flow 1");
   ASSERT_EQUAL_UINT32     (read_id_1d (READ_ID_2, 0x00), 0x00000000, "read id 1d - SEND 0xAB, READ_ID ADD 0, break flow 1");
   ASSERT_EQUAL_UINT32     (read_id_1e (READ_ID_2, 0x00), 0x0000bf8d, "read_id_1e - SEND 0xAB, READ_ID ADD 0, send FF after 0xAB,0x00,0x00,0x00");
-  // *** Debug ***
-  // return -1
-  int8_t data;
-  enableFlash();
-  SendByte (0xfe);
-  data = ReceiveByte ();
-  printf ("%d\n", data);
-  disableFlash();
-  // Flash is disabled now
-  SendByte (0xfe);
-  data = ReceiveByte ();
-  printf ("%d\n", data);
+  // Internal functions
+  ASSERT_NOT_EQUAL_UINT32 (transmit_when_disabled (), HAL_OK,     "transmit_when_disabled - not HAL_OK");
+  ASSERT_EQUAL_UINT32     (transmit_when_disabled (), HAL_ERROR,  "transmit_when_disabled - HAL_ERROR");
+  ASSERT_NOT_EQUAL_UINT32 (receive_when_disabled (),  HAL_OK,     "receive_when_disabled - not HAL_OK");
+  ASSERT_EQUAL_UINT32     (receive_when_disabled (),  HAL_ERROR,  "receive_when_disabled - HAL_ERROR");
+  // helper functions
+  ASSERT_EQUAL_INT32      (helper_function_1 (),  0,  "*** Debug 1 *** - return -1");
+  ASSERT_NOT_EQUAL_INT32  (helper_function_1 (),  -1, "*** Debug 2 *** - return -1");
+  ASSERT_EQUAL_INT32      (helper_function_2 (),  -1, "*** Debug 3 *** - return 0");
+  ASSERT_NOT_EQUAL_INT32  (helper_function_2 (),  0,  "*** Debug 4 *** - return 0");
   return 0;
 }
 
