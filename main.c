@@ -13,7 +13,7 @@
 static struct device_context {
   uint8_t command_register;
   uint8_t buffer[2];
-  bool in_progress;
+  //bool in_progress;
   uint8_t store_one_byte;
   bool hold_bar;
   // JEDEC
@@ -75,7 +75,7 @@ HAL_SPI_Transmit (SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32
   switch (*pData) {
     case JEDEC :
       //printf ("-> [S] Command Register 0x%x\n", *pData);
-      dev_ctx.in_progress = true;
+      //dev_ctx.in_progress = true;
       dev_ctx.jedec_in_progress = true;
       dev_ctx.command_register = *pData;
       break;
@@ -90,14 +90,14 @@ HAL_SPI_Transmit (SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32
         if (*pData == 0x00 && dev_ctx.read_id_count == 2) {
           printf ("ADD type 0\n");
           dev_ctx.read_id_count = 0;
-          dev_ctx.in_progress = true;
+          //dev_ctx.in_progress = true;
           dev_ctx.read_id_type = 1;
         }
         else
         if (*pData == 0x01 && dev_ctx.read_id_count == 2) {
           printf ("ADD type 1\n");
           dev_ctx.read_id_count = 0;
-          dev_ctx.in_progress = true;
+          //dev_ctx.in_progress = true;
           dev_ctx.read_id_type = 2;
         }
         else
@@ -136,16 +136,16 @@ HAL_SPI_Receive (SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_
   //printf ("-> [R] Command Register 0x%x\n", dev_ctx.command_register);
   switch (dev_ctx.command_register) {
     case JEDEC :
-      //if (dev_ctx.jedec_in_progress == true) {
+      if (dev_ctx.jedec_in_progress == true) {
         *pData = dev_ctx.jedec [dev_ctx.jedec_counter_internal];
         dev_ctx.jedec_counter_internal++;
         if (dev_ctx.jedec_counter_internal == JEDEC_COUNT) {
           dev_ctx.command_register = 0x00;
           dev_ctx.jedec_in_progress = false;
           dev_ctx.jedec_counter_internal = 0;
-          dev_ctx.in_progress = false;
+          //dev_ctx.in_progress = false;
         }
-      //}
+      }
       break;
     case READ_ID_1 :
     case READ_ID_2 :
@@ -160,7 +160,7 @@ HAL_SPI_Receive (SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_
               *pData = dev_ctx.read_id [READ_ID_D];
               dev_ctx.read_id_type = 0;
               dev_ctx.command_register = 0x00;
-              dev_ctx.in_progress = false;
+              //dev_ctx.in_progress = false;
             }
             break;
           case 2 :
@@ -172,7 +172,7 @@ HAL_SPI_Receive (SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_
               *pData = dev_ctx.read_id [READ_ID_M];
               dev_ctx.read_id_type = 0;
               dev_ctx.command_register = 0x00;
-              dev_ctx.in_progress = false;
+              //dev_ctx.in_progress = false;
             }
             break;
           default :
