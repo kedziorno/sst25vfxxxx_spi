@@ -1,5 +1,5 @@
 #!/bin/sh
-set -x
+#set -x
 
  ./run_testrunner.sh $@
 
