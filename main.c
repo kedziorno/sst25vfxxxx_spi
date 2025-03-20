@@ -428,53 +428,6 @@ uint32_t read_id_1e (uint8_t read_id_command, uint8_t read_id_type) { // SEND 0x
   return read_id;
 }
 
-
-
-
-
-
-
-
-
-
-/*uint32_t read_id_2 (void) { // SEND 0xAB*/
-/*  DEBUG;*/
-/*  uint8_t data = 0;*/
-/*  uint32_t read_id = 0x00000000;*/
-/*  enableFlash();*/
-/*  SendByte(READ_ID_2);*/
-/*  //SendByte(0xff); // Break READ_ID command*/
-/*  SendByte(0x00);*/
-/*  //SendByte(0xff); // Break READ_ID command*/
-/*  SendByte(0x00);*/
-/*  //SendByte(0xff); // Break READ_ID command*/
-/*  SendByte(0x01); // 0x01,0x00*/
-/*  data = ReceiveByte();*/
-/*  read_id = read_id << 8 | data;*/
-/*  data = ReceiveByte();*/
-/*  read_id = read_id << 8 | data;*/
-/*  return read_id;*/
-/*}*/
-
-/*uint32_t read_id_2 (void) { // */
-/*  DEBUG;*/
-/*  uint8_t data = 0;*/
-/*  uint32_t read_id = 0x00000000;*/
-/*  enableFlash();*/
-/*  SendByte(READ_ID_2);*/
-/*  //SendByte(0xff); // Break READ_ID command*/
-/*  SendByte(0x00);*/
-/*  //SendByte(0xff); // Break READ_ID command*/
-/*  SendByte(0x00);*/
-/*  //SendByte(0xff); // Break READ_ID command*/
-/*  SendByte(0x01); // 0x01,0x00*/
-/*  data = ReceiveByte();*/
-/*  read_id = read_id << 8 | data;*/
-/*  data = ReceiveByte();*/
-/*  read_id = read_id << 8 | data;*/
-/*  return read_id;*/
-/*}*/
-
 int
 main (int argc, char *argv[]) {
   // JEDEC
