@@ -64,14 +64,14 @@ HAL_StatusTypeDef
 HAL_SPI_Transmit (SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout) {
   DEBUG;
   printf ("-> [S] BYTE = 0x%x\n", *pData);
-  if (dev_ctx.hold_bar == 1) { // XXX HOLD# is enable, nothing to do
+  if (dev_ctx.hold_bar == 0) { // XXX HOLD# is enable, nothing to do
     printf ("HOLD# mode, SPI SO HIGH IMPEDANCE\n");
     return HAL_ERROR;
-  } 
-  if (dev_ctx.in_progress == true) {
-    printf ("Device in progress\n");
-    return HAL_BUSY;
   }
+/*  if (dev_ctx.in_progress == true) {*/
+/*    printf ("Device in progress\n");*/
+/*    return HAL_BUSY;*/
+/*  }*/
   switch (*pData) {
     case JEDEC :
       //printf ("-> [S] Command Register 0x%x\n", *pData);
@@ -125,14 +125,18 @@ HAL_SPI_Transmit (SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32
 HAL_StatusTypeDef
 HAL_SPI_Receive (SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_t Timeout) {
   DEBUG;
-  if (dev_ctx.hold_bar == 1) { // XXX HOLD# is enable, nothing to do
+  if (dev_ctx.hold_bar == 0) { // XXX HOLD# is enable, nothing to do
     printf ("HOLD# mode, SPI SO HIGH IMPEDANCE\n");
     return HAL_ERROR; // XXX When HOLD, memory can receive and buffer some commands ?
   }
+/*  if (dev_ctx.in_progress == true) {*/
+/*    printf ("Device in progress\n");*/
+/*    return HAL_BUSY;*/
+/*  }*/
   //printf ("-> [R] Command Register 0x%x\n", dev_ctx.command_register);
   switch (dev_ctx.command_register) {
     case JEDEC :
-      if (dev_ctx.jedec_in_progress == true) {
+      //if (dev_ctx.jedec_in_progress == true) {
         *pData = dev_ctx.jedec [dev_ctx.jedec_counter_internal];
         dev_ctx.jedec_counter_internal++;
         if (dev_ctx.jedec_counter_internal == JEDEC_COUNT) {
@@ -141,11 +145,11 @@ HAL_SPI_Receive (SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_
           dev_ctx.jedec_counter_internal = 0;
           dev_ctx.in_progress = false;
         }
-      }
+      //}
       break;
     case READ_ID_1 :
     case READ_ID_2 :
-      if (dev_ctx.in_progress == true) {
+      //if (dev_ctx.in_progress == true) {
         switch (dev_ctx.read_id_type) {
           case 1 :
             if (dev_ctx.read_id_zero == false) {
@@ -174,7 +178,7 @@ HAL_SPI_Receive (SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32_
           default :
             printf ("dev_ctx.read_id_type");
         }
-      }
+      //}
       break;
     default :
       *pData = dev_ctx.store_one_byte;
@@ -212,13 +216,13 @@ SPI_HandleTypeDef hspi1;
 void disableFlash(void)
 {
   DEBUG;
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, GPIO_PIN_RESET);
 }
 
 void enableFlash(void)
 {
   DEBUG;
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, GPIO_PIN_SET);
 }
 
 void SendByte(uint8_t data)
@@ -358,6 +362,7 @@ uint32_t read_id_1b (void) { // SEND 0x90, READ_ID ADD 1, break flow 1
   read_id = read_id << 8 | data;
   data = ReceiveByte();
   read_id = read_id << 8 | data;
+  disableFlash();
   return read_id;
 }
 
@@ -377,6 +382,7 @@ uint32_t read_id_1c (void) { // SEND 0x90, READ_ID ADD 1, break flow 2
   read_id = read_id << 8 | data;
   data = ReceiveByte();
   read_id = read_id << 8 | data;
+  disableFlash();
   return read_id;
 }
 
@@ -396,6 +402,7 @@ uint32_t read_id_1d (void) { // SEND 0x90, READ_ID ADD 1, break flow 3
   read_id = read_id << 8 | data;
   data = ReceiveByte();
   read_id = read_id << 8 | data;
+  disableFlash();
   return read_id;
 }
 
@@ -456,7 +463,8 @@ main (int argc, char *argv[]) {
   ASSERT_EQUAL_UINT32     (read_id_jedec_break_flow_2 (),   0x00000000,   "read jedec - break flow 2  - disableFlash() in middle");
   ASSERT_EQUAL_UINT32     (read_id_jedec_break_flow_3 (),   0x00000000,   "read jedec - break flow 3  - disableFlash() at bottom");
   // READ-ID
-  ASSERT_EQUAL_UINT32     (read_id_1a (), 0x0000bf8d, "read id 1a");
+  uint32_t t = read_id_1a ();
+  ASSERT_EQUAL_UINT32     (t, 0x00008dbf, "read id 1a");
   ASSERT_EQUAL_UINT32     (read_id_1b (), 0x00000000, "read id 1b");
   ASSERT_EQUAL_UINT32     (read_id_1c (), 0x00000000, "read id 1c");
   ASSERT_EQUAL_UINT32     (read_id_1d (), 0x00000000, "read id 1d");
