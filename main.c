@@ -5,6 +5,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+// pytest_c_testrunner
+#include "test_macros_uint32.h"
+
 #define DEBUG //printf ("Call %s\n", __FUNCTION__)
 
 static struct device_context {
@@ -235,14 +238,30 @@ uint8_t ReceiveByte(void)
 // From datasheet
 
 // 4.4.15 JEDEC READ-ID (p. 17)
-uint32_t read_id_jedec (void) {
+uint32_t read_id_jedec_normal_flow_1 (void) { // normal flow
+  DEBUG;
+  uint8_t data = 0;
+  uint32_t jedec = 0x00000000;
+  enableFlash();
+  SendByte(JEDEC);
+  data = ReceiveByte();
+  jedec = (jedec << 8) | data;
+  data = ReceiveByte();
+  jedec = (jedec << 8) | data;
+  data = ReceiveByte();
+  jedec = (jedec << 8) | data;
+  disableFlash();
+  return jedec;
+}
+
+uint32_t read_id_jedec_break_flow_1 (void) { // break flow
   DEBUG;
   uint8_t data = 0;
   uint32_t jedec = 0x00000000;
   enableFlash();
   SendByte(JEDEC);
   //enableFlash();
-  //disableFlash();
+  disableFlash();
   data = ReceiveByte();
   jedec = (jedec << 8) | data;
   //enableFlash();
@@ -257,14 +276,79 @@ uint32_t read_id_jedec (void) {
   return jedec;
 }
 
-uint32_t read_id (void) {
+uint32_t read_id_jedec_break_flow_2 (void) { // break flow
+  DEBUG;
+  uint8_t data = 0;
+  uint32_t jedec = 0x00000000;
+  enableFlash();
+  SendByte(JEDEC);
+  //enableFlash();
+  //disableFlash();
+  data = ReceiveByte();
+  jedec = (jedec << 8) | data;
+  //enableFlash();
+  disableFlash();
+  data = ReceiveByte();
+  jedec = (jedec << 8) | data;
+  //enableFlash();
+  //disableFlash();
+  data = ReceiveByte();
+  jedec = (jedec << 8) | data;
+  disableFlash();
+  return jedec;
+}
+
+uint32_t read_id_jedec_break_flow_3 (void) { // break flow
+  DEBUG;
+  uint8_t data = 0;
+  uint32_t jedec = 0x00000000;
+  enableFlash();
+  SendByte(JEDEC);
+  //enableFlash();
+  //disableFlash();
+  data = ReceiveByte();
+  jedec = (jedec << 8) | data;
+  //enableFlash();
+  //disableFlash();
+  data = ReceiveByte();
+  jedec = (jedec << 8) | data;
+  //enableFlash();
+  disableFlash();
+  data = ReceiveByte();
+  jedec = (jedec << 8) | data;
+  disableFlash();
+  return jedec;
+}
+
+// 4.4.16 READ-ID (RDID) (p. 18)
+
+uint32_t read_id_1a (void) { // SEND 0x90, READ_ID ADD 1
   DEBUG;
   uint8_t data = 0;
   uint32_t read_id = 0x00000000;
   enableFlash();
   SendByte(READ_ID_1);
-  SendByte(READ_ID_2);
   //SendByte(0xff); // Break READ_ID command
+  SendByte(0x00);
+  //SendByte(0xff); // Break READ_ID command
+  SendByte(0x00);
+  //SendByte(0xff); // Break READ_ID command
+  SendByte(0x01); // 0x01,0x00
+  data = ReceiveByte();
+  read_id = read_id << 8 | data;
+  data = ReceiveByte();
+  read_id = read_id << 8 | data;
+  disableFlash();
+  return read_id;
+}
+
+uint32_t read_id_1b (void) { // SEND 0x90, READ_ID ADD 1, break flow 1
+  DEBUG;
+  uint8_t data = 0;
+  uint32_t read_id = 0x00000000;
+  enableFlash();
+  SendByte(READ_ID_1);
+  SendByte(0xff); // Break READ_ID command
   SendByte(0x00);
   //SendByte(0xff); // Break READ_ID command
   SendByte(0x00);
@@ -277,10 +361,106 @@ uint32_t read_id (void) {
   return read_id;
 }
 
+uint32_t read_id_1c (void) { // SEND 0x90, READ_ID ADD 1, break flow 2
+  DEBUG;
+  uint8_t data = 0;
+  uint32_t read_id = 0x00000000;
+  enableFlash();
+  SendByte(READ_ID_1);
+  //SendByte(0xff); // Break READ_ID command
+  SendByte(0x00);
+  SendByte(0xff); // Break READ_ID command
+  SendByte(0x00);
+  //SendByte(0xff); // Break READ_ID command
+  SendByte(0x01); // 0x01,0x00
+  data = ReceiveByte();
+  read_id = read_id << 8 | data;
+  data = ReceiveByte();
+  read_id = read_id << 8 | data;
+  return read_id;
+}
+
+uint32_t read_id_1d (void) { // SEND 0x90, READ_ID ADD 1, break flow 3
+  DEBUG;
+  uint8_t data = 0;
+  uint32_t read_id = 0x00000000;
+  enableFlash();
+  SendByte(READ_ID_1);
+  //SendByte(0xff); // Break READ_ID command
+  SendByte(0x00);
+  //SendByte(0xff); // Break READ_ID command
+  SendByte(0x00);
+  SendByte(0xff); // Break READ_ID command
+  SendByte(0x01); // 0x01,0x00
+  data = ReceiveByte();
+  read_id = read_id << 8 | data;
+  data = ReceiveByte();
+  read_id = read_id << 8 | data;
+  return read_id;
+}
+
+
+
+
+
+
+
+
+
+
+
+/*uint32_t read_id_2 (void) { // SEND 0xAB*/
+/*  DEBUG;*/
+/*  uint8_t data = 0;*/
+/*  uint32_t read_id = 0x00000000;*/
+/*  enableFlash();*/
+/*  SendByte(READ_ID_2);*/
+/*  //SendByte(0xff); // Break READ_ID command*/
+/*  SendByte(0x00);*/
+/*  //SendByte(0xff); // Break READ_ID command*/
+/*  SendByte(0x00);*/
+/*  //SendByte(0xff); // Break READ_ID command*/
+/*  SendByte(0x01); // 0x01,0x00*/
+/*  data = ReceiveByte();*/
+/*  read_id = read_id << 8 | data;*/
+/*  data = ReceiveByte();*/
+/*  read_id = read_id << 8 | data;*/
+/*  return read_id;*/
+/*}*/
+
+/*uint32_t read_id_2 (void) { // */
+/*  DEBUG;*/
+/*  uint8_t data = 0;*/
+/*  uint32_t read_id = 0x00000000;*/
+/*  enableFlash();*/
+/*  SendByte(READ_ID_2);*/
+/*  //SendByte(0xff); // Break READ_ID command*/
+/*  SendByte(0x00);*/
+/*  //SendByte(0xff); // Break READ_ID command*/
+/*  SendByte(0x00);*/
+/*  //SendByte(0xff); // Break READ_ID command*/
+/*  SendByte(0x01); // 0x01,0x00*/
+/*  data = ReceiveByte();*/
+/*  read_id = read_id << 8 | data;*/
+/*  data = ReceiveByte();*/
+/*  read_id = read_id << 8 | data;*/
+/*  return read_id;*/
+/*}*/
+
 int
 main (int argc, char *argv[]) {
-  printf ("*** JEDEC : %x\n", read_id_jedec ());
-  printf ("*** READ_ID : %x\n", read_id ());
+  // JEDEC
+  ASSERT_EQUAL_UINT32     (read_id_jedec_normal_flow_1 (),  0x00bf258d,   "read jedec - normal flow   - good value");
+  ASSERT_NOT_EQUAL_UINT32 (read_id_jedec_normal_flow_1 (),  0x00bf258f,   "read jedec - normal flow   - bad value, noise on SPI DO");
+  ASSERT_EQUAL_UINT32     (read_id_jedec_break_flow_1 (),   0x00000000,   "read jedec - break flow 1  - disableFlash() at top");
+  ASSERT_EQUAL_UINT32     (read_id_jedec_break_flow_2 (),   0x00000000,   "read jedec - break flow 2  - disableFlash() in middle");
+  ASSERT_EQUAL_UINT32     (read_id_jedec_break_flow_3 (),   0x00000000,   "read jedec - break flow 3  - disableFlash() at bottom");
+  // READ-ID
+  ASSERT_EQUAL_UINT32     (read_id_1a (), 0x0000bf8d, "read id 1a");
+  ASSERT_EQUAL_UINT32     (read_id_1b (), 0x00000000, "read id 1b");
+  ASSERT_EQUAL_UINT32     (read_id_1c (), 0x00000000, "read id 1c");
+  ASSERT_EQUAL_UINT32     (read_id_1d (), 0x00000000, "read id 1d");
+  
   int8_t data;
   // Debug, return -1
   enableFlash();
@@ -294,3 +474,4 @@ main (int argc, char *argv[]) {
   printf ("%d\n", data);
   return 0;
 }
+
