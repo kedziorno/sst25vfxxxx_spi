@@ -489,12 +489,22 @@ main (int argc, char *argv[]) {
   ASSERT_EQUAL_UINT32     (read_id_1c (READ_ID_1, 0x01), 0x00000000, "read id 1c - SEND 0x90, READ_ID ADD 1, break flow 1");
   ASSERT_EQUAL_UINT32     (read_id_1d (READ_ID_1, 0x01), 0x00000000, "read id 1d - SEND 0x90, READ_ID ADD 1, break flow 1");
   ASSERT_EQUAL_UINT32     (read_id_1e (READ_ID_1, 0x01), 0x00008dbf, "read_id_1e - SEND 0x90, READ_ID ADD 1, send FF after 0x90,0x00,0x00,0x01");
+  ASSERT_EQUAL_UINT32     (read_id_1a (READ_ID_2, 0x01), 0x00008dbf, "read id 1a - SEND 0xAB, READ_ID ADD 1");
+  ASSERT_EQUAL_UINT32     (read_id_1b (READ_ID_2, 0x01), 0x00000000, "read id 1b - SEND 0xAB, READ_ID ADD 1, break flow 1");
+  ASSERT_EQUAL_UINT32     (read_id_1c (READ_ID_2, 0x01), 0x00000000, "read id 1c - SEND 0xAB, READ_ID ADD 1, break flow 1");
+  ASSERT_EQUAL_UINT32     (read_id_1d (READ_ID_2, 0x01), 0x00000000, "read id 1d - SEND 0xAB, READ_ID ADD 1, break flow 1");
+  ASSERT_EQUAL_UINT32     (read_id_1e (READ_ID_2, 0x01), 0x00008dbf, "read_id_1e - SEND 0xAB, READ_ID ADD 1, send FF after 0xAB,0x00,0x00,0x01");
   // READ-ID ADD 0
   ASSERT_EQUAL_UINT32     (read_id_1a (READ_ID_1, 0x00), 0x0000bf8d, "read id 1a - SEND 0x90, READ_ID ADD 0");
   ASSERT_EQUAL_UINT32     (read_id_1b (READ_ID_1, 0x00), 0x00000000, "read id 1b - SEND 0x90, READ_ID ADD 0, break flow 1");
   ASSERT_EQUAL_UINT32     (read_id_1c (READ_ID_1, 0x00), 0x00000000, "read id 1c - SEND 0x90, READ_ID ADD 0, break flow 1");
   ASSERT_EQUAL_UINT32     (read_id_1d (READ_ID_1, 0x00), 0x00000000, "read id 1d - SEND 0x90, READ_ID ADD 0, break flow 1");
   ASSERT_EQUAL_UINT32     (read_id_1e (READ_ID_1, 0x00), 0x0000bf8d, "read_id_1e - SEND 0x90, READ_ID ADD 0, send FF after 0x90,0x00,0x00,0x00");
+  ASSERT_EQUAL_UINT32     (read_id_1a (READ_ID_2, 0x00), 0x0000bf8d, "read id 1a - SEND 0xAB, READ_ID ADD 0");
+  ASSERT_EQUAL_UINT32     (read_id_1b (READ_ID_2, 0x00), 0x00000000, "read id 1b - SEND 0xAB, READ_ID ADD 0, break flow 1");
+  ASSERT_EQUAL_UINT32     (read_id_1c (READ_ID_2, 0x00), 0x00000000, "read id 1c - SEND 0xAB, READ_ID ADD 0, break flow 1");
+  ASSERT_EQUAL_UINT32     (read_id_1d (READ_ID_2, 0x00), 0x00000000, "read id 1d - SEND 0xAB, READ_ID ADD 0, break flow 1");
+  ASSERT_EQUAL_UINT32     (read_id_1e (READ_ID_2, 0x00), 0x0000bf8d, "read_id_1e - SEND 0xAB, READ_ID ADD 0, send FF after 0xAB,0x00,0x00,0x00");
   // *** Debug ***
   // return -1
   int8_t data;
