@@ -1,0 +1,4 @@
+[submodule "pytest_c_testrunner"]
+	path = pytest_c_testrunner
+	url = https://github.com/jmcnamara/pytest_c_testrunner.git
+	branch = master
