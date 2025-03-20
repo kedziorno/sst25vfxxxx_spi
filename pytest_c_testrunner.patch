@@ -703,8 +703,8 @@ index 0000000..3a546fb
 +      } else {\
 +        PRINT_FAIL(str);\
 +        printf("  [TST] ASSERT_NOT_EQUAL_UINT32(" #exp ", " #got ")\n"); \
-+        printf("  [EXP] %d\n", (_exp)); \
-+        printf("  [GOT] %d\n", (_got)); \
++        printf("  [EXP] %d (%x)\n", (_exp), (_exp)); \
++        printf("  [GOT] %d (%x)\n", (_got), (_got)); \
 +      } \
 +    } while (0);
 +
