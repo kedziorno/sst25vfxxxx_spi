@@ -92,6 +92,7 @@ HAL_SPI_Transmit (SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32
           dev_ctx.read_id_count = 0;
           //dev_ctx.in_progress = true;
           dev_ctx.read_id_type = 1;
+          dev_ctx.read_id_zero = false;
         }
         else
         if (*pData == 0x01 && dev_ctx.read_id_count == 2) {
@@ -99,6 +100,7 @@ HAL_SPI_Transmit (SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32
           dev_ctx.read_id_count = 0;
           //dev_ctx.in_progress = true;
           dev_ctx.read_id_type = 2;
+          dev_ctx.read_id_zero = false;
         }
         else
         if (*pData == 0x00) {
@@ -110,8 +112,8 @@ HAL_SPI_Transmit (SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32
       }
       break;
     default :  // When receive, read byte value +1
-      dev_ctx.read_id_count = 0;
-      dev_ctx.read_id_type = 0;
+      //dev_ctx.read_id_count = 0;
+      //dev_ctx.read_id_type = 0;
       dev_ctx.command_register = 0x00;
       dev_ctx.store_one_byte = *pData;
       dev_ctx.store_one_byte++;
@@ -326,18 +328,18 @@ uint32_t read_id_jedec_break_flow_3 (void) { // break flow
 
 // 4.4.16 READ-ID (RDID) (p. 18)
 
-uint32_t read_id_1a (void) { // SEND 0x90, READ_ID ADD 1
+uint32_t read_id_1a (uint8_t read_id_command, uint8_t read_id_type) { // SEND 0x90, READ_ID ADD 1
   DEBUG;
   uint8_t data = 0;
   uint32_t read_id = 0x00000000;
   enableFlash();
-  SendByte(READ_ID_1);
+  SendByte(read_id_command);
   //SendByte(0xff); // Break READ_ID command
   SendByte(0x00);
   //SendByte(0xff); // Break READ_ID command
   SendByte(0x00);
   //SendByte(0xff); // Break READ_ID command
-  SendByte(0x01); // 0x01,0x00
+  SendByte(read_id_type); // 0x01,0x00
   data = ReceiveByte();
   read_id = read_id << 8 | data;
   data = ReceiveByte();
@@ -346,18 +348,18 @@ uint32_t read_id_1a (void) { // SEND 0x90, READ_ID ADD 1
   return read_id;
 }
 
-uint32_t read_id_1b (void) { // SEND 0x90, READ_ID ADD 1, break flow 1
+uint32_t read_id_1b (uint8_t read_id_command, uint8_t read_id_type) { // SEND 0x90, READ_ID ADD 1, break flow 1
   DEBUG;
   uint8_t data = 0;
   uint32_t read_id = 0x00000000;
   enableFlash();
-  SendByte(READ_ID_1);
+  SendByte(read_id_command);
   SendByte(0xff); // Break READ_ID command
   SendByte(0x00);
   //SendByte(0xff); // Break READ_ID command
   SendByte(0x00);
   //SendByte(0xff); // Break READ_ID command
-  SendByte(0x01); // 0x01,0x00
+  SendByte(read_id_type); // 0x01,0x00
   data = ReceiveByte();
   read_id = read_id << 8 | data;
   data = ReceiveByte();
@@ -366,18 +368,18 @@ uint32_t read_id_1b (void) { // SEND 0x90, READ_ID ADD 1, break flow 1
   return read_id;
 }
 
-uint32_t read_id_1c (void) { // SEND 0x90, READ_ID ADD 1, break flow 2
+uint32_t read_id_1c (uint8_t read_id_command, uint8_t read_id_type) { // SEND 0x90, READ_ID ADD 1, break flow 2
   DEBUG;
   uint8_t data = 0;
   uint32_t read_id = 0x00000000;
   enableFlash();
-  SendByte(READ_ID_1);
+  SendByte(read_id_command);
   //SendByte(0xff); // Break READ_ID command
   SendByte(0x00);
   SendByte(0xff); // Break READ_ID command
   SendByte(0x00);
   //SendByte(0xff); // Break READ_ID command
-  SendByte(0x01); // 0x01,0x00
+  SendByte(read_id_type); // 0x01,0x00
   data = ReceiveByte();
   read_id = read_id << 8 | data;
   data = ReceiveByte();
@@ -386,18 +388,18 @@ uint32_t read_id_1c (void) { // SEND 0x90, READ_ID ADD 1, break flow 2
   return read_id;
 }
 
-uint32_t read_id_1d (void) { // SEND 0x90, READ_ID ADD 1, break flow 3
+uint32_t read_id_1d (uint8_t read_id_command, uint8_t read_id_type) { // SEND 0x90, READ_ID ADD 1, break flow 3
   DEBUG;
   uint8_t data = 0;
   uint32_t read_id = 0x00000000;
   enableFlash();
-  SendByte(READ_ID_1);
+  SendByte(read_id_command);
   //SendByte(0xff); // Break READ_ID command
   SendByte(0x00);
   //SendByte(0xff); // Break READ_ID command
   SendByte(0x00);
   SendByte(0xff); // Break READ_ID command
-  SendByte(0x01); // 0x01,0x00
+  SendByte(read_id_type); // 0x01,0x00
   data = ReceiveByte();
   read_id = read_id << 8 | data;
   data = ReceiveByte();
@@ -406,17 +408,17 @@ uint32_t read_id_1d (void) { // SEND 0x90, READ_ID ADD 1, break flow 3
   return read_id;
 }
 
-uint32_t read_id_1e (void) { // SEND 0x90, READ_ID ADD 1, send FF after 0x90,0x00,0x00,0x01
+uint32_t read_id_1e (uint8_t read_id_command, uint8_t read_id_type) { // SEND 0x90, READ_ID ADD 1, send FF after 0x90,0x00,0x00,0x01
   DEBUG;
   uint8_t data = 0;
   uint32_t read_id = 0x00000000;
   enableFlash();
-  SendByte(READ_ID_1);
+  SendByte(read_id_command);
   //SendByte(0xff); // Break READ_ID command
   SendByte(0x00);
   //SendByte(0xff); // Break READ_ID command
   SendByte(0x00);
-  SendByte(0x01); // 0x01,0x00
+  SendByte(read_id_type); // 0x01,0x00
   SendByte(0xff); // Break READ_ID command
   data = ReceiveByte();
   read_id = read_id << 8 | data;
@@ -481,12 +483,18 @@ main (int argc, char *argv[]) {
   ASSERT_EQUAL_UINT32     (read_id_jedec_break_flow_1 (),   0x00000000,   "read jedec - break flow 1  - disableFlash() at top");
   ASSERT_EQUAL_UINT32     (read_id_jedec_break_flow_2 (),   0x00000000,   "read jedec - break flow 2  - disableFlash() in middle");
   ASSERT_EQUAL_UINT32     (read_id_jedec_break_flow_3 (),   0x00000000,   "read jedec - break flow 3  - disableFlash() at bottom");
-  // READ-ID
-  ASSERT_EQUAL_UINT32     (read_id_1a (), 0x00008dbf, "read id 1a - SEND 0x90, READ_ID ADD 1");
-  ASSERT_EQUAL_UINT32     (read_id_1b (), 0x00000000, "read id 1b - SEND 0x90, READ_ID ADD 1, break flow 1");
-  ASSERT_EQUAL_UINT32     (read_id_1c (), 0x00000000, "read id 1c - SEND 0x90, READ_ID ADD 1, break flow 1");
-  ASSERT_EQUAL_UINT32     (read_id_1d (), 0x00000000, "read id 1d - SEND 0x90, READ_ID ADD 1, break flow 1");
-  ASSERT_EQUAL_UINT32     (read_id_1e (), 0x00008dbf, "read_id_1e - SEND 0x90, READ_ID ADD 1, send FF after 0x90,0x00,0x00,0x01");
+  // READ-ID ADD 1
+  ASSERT_EQUAL_UINT32     (read_id_1a (READ_ID_1, 0x01), 0x00008dbf, "read id 1a - SEND 0x90, READ_ID ADD 1");
+  ASSERT_EQUAL_UINT32     (read_id_1b (READ_ID_1, 0x01), 0x00000000, "read id 1b - SEND 0x90, READ_ID ADD 1, break flow 1");
+  ASSERT_EQUAL_UINT32     (read_id_1c (READ_ID_1, 0x01), 0x00000000, "read id 1c - SEND 0x90, READ_ID ADD 1, break flow 1");
+  ASSERT_EQUAL_UINT32     (read_id_1d (READ_ID_1, 0x01), 0x00000000, "read id 1d - SEND 0x90, READ_ID ADD 1, break flow 1");
+  ASSERT_EQUAL_UINT32     (read_id_1e (READ_ID_1, 0x01), 0x00008dbf, "read_id_1e - SEND 0x90, READ_ID ADD 1, send FF after 0x90,0x00,0x00,0x01");
+  // READ-ID ADD 0
+  ASSERT_EQUAL_UINT32     (read_id_1a (READ_ID_1, 0x00), 0x0000bf8d, "read id 1a - SEND 0x90, READ_ID ADD 0");
+  ASSERT_EQUAL_UINT32     (read_id_1b (READ_ID_1, 0x00), 0x00000000, "read id 1b - SEND 0x90, READ_ID ADD 0, break flow 1");
+  ASSERT_EQUAL_UINT32     (read_id_1c (READ_ID_1, 0x00), 0x00000000, "read id 1c - SEND 0x90, READ_ID ADD 0, break flow 1");
+  ASSERT_EQUAL_UINT32     (read_id_1d (READ_ID_1, 0x00), 0x00000000, "read id 1d - SEND 0x90, READ_ID ADD 0, break flow 1");
+  ASSERT_EQUAL_UINT32     (read_id_1e (READ_ID_1, 0x00), 0x0000bf8d, "read_id_1e - SEND 0x90, READ_ID ADD 0, send FF after 0x90,0x00,0x00,0x00");
   // *** Debug ***
   // return -1
   int8_t data;
