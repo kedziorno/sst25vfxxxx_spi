@@ -687,7 +687,7 @@ index 0000000..3a546fb
 +
 +#include "test_macros_info.h"
 +
-+#define ASSERT_NOT_EQUAL_UINT32(str, exp, got)\
++#define ASSERT_NOT_EQUAL_UINT32(exp, got, str)\
 +    do {\
 +      uint32_t _exp = (uint32_t)exp;\
 +      uint32_t _got = (uint32_t)got;\
@@ -708,7 +708,7 @@ index 0000000..3a546fb
 +      } \
 +    } while (0);
 +
-+#define ASSERT_EQUAL_UINT32(str, exp, got) \
++#define ASSERT_EQUAL_UINT32(exp, got, str) \
 +    do { \
 +      uint32_t _exp = (uint32_t)exp; \
 +      uint32_t _got = (uint32_t)got; \
