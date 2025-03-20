@@ -466,7 +466,7 @@ index 0000000..ae60d51
 +
 +#include "test_macros_info.h"
 +
-+#define ASSERT_NOT_EQUAL_INT32(str, exp, got)                                 \
++#define ASSERT_NOT_EQUAL_INT32(got, exp, str)                                 \
 +    do {                                                                      \
 +      int32_t _exp = (int32_t)exp;                                            \
 +      int32_t _got = (int32_t)got;                                            \
@@ -475,12 +475,12 @@ index 0000000..ae60d51
 +      } else {                                                                \
 +        PRINT_FAIL(str);                                                      \
 +        printf("  [TST] ASSERT_NOT_EQUAL_INT32(" #exp ", " #got ")\n");       \
-+        printf("  [EXP] %d\n", (exp));                                        \
-+        printf("  [GOT] %d\n", (got));                                        \
++        printf("  [EXP] %d (0x%08x)\n", (_exp), (_exp));                                        \
++        printf("  [GOT] %d (0x%08x)\n", (_got), (_got));                                        \
 +      }                                                                       \
 +    } while (0);
 +
-+#define ASSERT_EQUAL_INT32(str, exp, got)                                     \
++#define ASSERT_EQUAL_INT32(got, exp, str)                                     \
 +    do {                                                                      \
 +      int32_t _exp = (int32_t)exp;                                            \
 +      int32_t _got = (int32_t)got;                                            \
@@ -489,8 +489,8 @@ index 0000000..ae60d51
 +      } else {                                                                \
 +        PRINT_FAIL(str);                                                      \
 +        printf("  [TST] ASSERT_EQUAL_INT32(" #exp ", " #got ")\n");           \
-+        printf("  [EXP] %d\n", (exp));                                        \
-+        printf("  [GOT] %d\n", (got));                                        \
++        printf("  [EXP] %d (0x%08x)\n", (_exp), (_exp));                                        \
++        printf("  [GOT] %d (0x%08x)\n", (_got), (_got));                                        \
 +      }                                                                       \
 +    } while (0);
 +
