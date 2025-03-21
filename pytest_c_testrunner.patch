@@ -789,8 +789,8 @@ index 0000000..ff2955f
 +      } else { \
 +        PRINT_FAIL(str); \
 +        printf("  [TST] ASSERT_EQUAL_UINT8(" #exp ", " #got ")\n"); \
-+        printf("  [EXP] %u\n", (_exp), (_exp)); \
-+        printf("  [GOT] %u\n", (_got), (_got)); \
++        printf("  [EXP] %u (0x%x)\n", (_exp), (_exp)); \
++        printf("  [GOT] %u (0x%x)\n", (_got), (_got)); \
 +      } \
 +    } while (0);
 +
