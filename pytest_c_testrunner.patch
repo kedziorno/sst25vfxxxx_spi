@@ -754,23 +754,23 @@ index 0000000..ff2955f
 +
 +#include "test_macros_info.h"
 +
-+#define ASSERT_NOT_EQUAL_UINT8(str, exp, got) \
++#define ASSERT_NOT_EQUAL_UINT8(got, exp, str) \
 +    do { \
 +      uint8_t _exp = (uint8_t)exp; \
 +      uint8_t _got = (uint8_t)got; \
 +      if ((exp) < 0 || (got) < 0) { \
 +        PRINT_FAIL(str); \
-+        printf("  [TST] NOT UINT8 (%d, %d)\n", exp, got); \
-+        printf("  [EXP] %u\n", (exp)); \
-+        printf("  [GOT] %u\n", (got)); \
++        printf("  [TST] NOT UINT8 (%u, %u)\n", exp, got); \
++        printf("  [EXP] %u (0x%x)\n", (_exp), (_exp)); \
++        printf("  [GOT] %u (0x%x)\n", (_got), (_got)); \
 +      } else \
 +      if ((_exp) != (_got)) { \
 +        PRINT_PASS(str); \
 +      } else { \
 +        PRINT_FAIL(str); \
 +        printf("  [TST] ASSERT_NOT_EQUAL_UINT8(" #exp ", " #got ")\n"); \
-+        printf("  [EXP] %d\n", (_exp)); \
-+        printf("  [GOT] %d\n", (_got)); \
++        printf("  [EXP] %u (0x%x)\n", (_exp), (_exp)); \
++        printf("  [GOT] %u (0x%x)\n", (_got), (_got)); \
 +      } \
 +    } while (0);
 +
@@ -780,17 +780,17 @@ index 0000000..ff2955f
 +      uint8_t _got = (uint8_t)got; \
 +      if ((exp) < 0 || (got) < 0) { \
 +        PRINT_FAIL(str); \
-+        printf("  [TST] NOT UINT8 (%d, %d)\n", exp, got); \
-+        printf("  [EXP] %u\n", (exp)); \
-+        printf("  [GOT] %u\n", (got)); \
++        printf("  [TST] NOT UINT8 (%u, %u)\n", exp, got); \
++        printf("  [EXP] %u (0x%x)\n", (_exp), (_exp)); \
++        printf("  [GOT] %u (0x%x)\n", (_got), (_got)); \
 +      } else \
 +      if ((_exp) == (_got)) { \
 +        PRINT_PASS(str); \
 +      } else { \
 +        PRINT_FAIL(str); \
 +        printf("  [TST] ASSERT_EQUAL_UINT8(" #exp ", " #got ")\n"); \
-+        printf("  [EXP] %d\n", (exp)); \
-+        printf("  [GOT] %d\n", (got)); \
++        printf("  [EXP] %u\n", (_exp), (_exp)); \
++        printf("  [GOT] %u\n", (_got), (_got)); \
 +      } \
 +    } while (0);
 +
