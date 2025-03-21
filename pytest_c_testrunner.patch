@@ -774,7 +774,7 @@ index 0000000..ff2955f
 +      } \
 +    } while (0);
 +
-+#define ASSERT_EQUAL_UINT8(str, exp, got) \
++#define ASSERT_EQUAL_UINT8(got, exp, str) \
 +    do { \
 +      uint8_t _exp = (uint8_t)exp; \
 +      uint8_t _got = (uint8_t)got; \
