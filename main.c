@@ -85,29 +85,43 @@ HAL_SPI_Transmit (SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32
 /*    return HAL_BUSY;*/
 /*  }*/
   uint8_t write_byte = *pData;
-  switch (*pData) {
-    case JEDEC :
-      if (dev_ctx.write_progress == false) {
-        //printf ("-> [S] Command Register 0x%x\n", *pData);
-        //dev_ctx.in_progress = true;
-        dev_ctx.jedec_in_progress = true;
-        dev_ctx.command_register = *pData;
-      }
-      break;
-    case WRITE :
-      dev_ctx.write_progress = true;
-      dev_ctx.command_register = *pData;
-      break;
-    case READ_ID_1 :
-    case READ_ID_2 :
+/*  switch (*pData) {*/
+/*    case JEDEC :*/
+/*      if (dev_ctx.write_progress == false) {*/
+/*        //printf ("-> [S] Command Register 0x%x\n", *pData);*/
+/*        //dev_ctx.in_progress = true;*/
+/*        dev_ctx.jedec_in_progress = true;*/
+/*        dev_ctx.command_register = *pData;*/
+/*      }*/
+/*      //break;*/
+/*    case WRITE :*/
+/*      dev_ctx.write_progress = true;*/
+/*      dev_ctx.command_register = *pData;*/
+/*      //break;*/
+/*    case READ_ID_1 :*/
+/*    case READ_ID_2 :*/
+/*      if (dev_ctx.write_progress == false) {*/
+/*        dev_ctx.read_progress = true;*/
+/*        //printf ("-> [S] Command Register 0x%x\n", *pData);*/
+/*        dev_ctx.command_register = *pData;*/
+/*      }*/
+/*      //break;*/
+/*    default :*/
+if (*pData == JEDEC) {
+  dev_ctx.jedec_in_progress = true;
+  dev_ctx.command_register = *pData;
+} else if (*pData == WRITE) {
+  dev_ctx.write_progress = true;
+  dev_ctx.command_register = *pData;
+} else if (*pData == READ_ID_1 || *pData == READ_ID_2) {
       if (dev_ctx.write_progress == false) {
         dev_ctx.read_progress = true;
         //printf ("-> [S] Command Register 0x%x\n", *pData);
         dev_ctx.command_register = *pData;
       }
-      break;
-    default :
-      if (dev_ctx.write_progress == true) {
+}
+else{
+//      if (dev_ctx.write_progress == true) {
         dev_ctx.address [dev_ctx.address_count] = *pData;
         printf ("write byte 0x%x at nibble 0x%x\n", dev_ctx.address [dev_ctx.address_count], dev_ctx.address_count);
         dev_ctx.address_count++;
@@ -122,7 +136,7 @@ HAL_SPI_Transmit (SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32
       } else
       if (dev_ctx.read_progress == true) {
         if (*pData == 0x00 || *pData == 0x01) {
-          if (dev_ctx.write_progress == false) {
+          //if (dev_ctx.write_progress == false) {
             if (dev_ctx.command_register == READ_ID_1 || dev_ctx.command_register == READ_ID_2) {
               if (*pData == 0x00 && dev_ctx.command_count == 2) {
                 printf ("ADD type 0\n");
@@ -132,7 +146,7 @@ HAL_SPI_Transmit (SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32
                 dev_ctx.read_id_zero = false;
               }
               else
-              if (*pData == 0x01 && dev_ctx.command_count == 2) {
+            if (*pData == 0x01 && dev_ctx.command_count == 2) {
                 printf ("ADD type 1\n");
                 dev_ctx.command_count = 0;
                 //dev_ctx.in_progress = true;
@@ -147,7 +161,7 @@ HAL_SPI_Transmit (SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32
               else
               dev_ctx.command_count = 0;
             }
-          }
+          //}
         }
       } else { // idle state progress
         //dev_ctx.command_count = 0;
@@ -159,7 +173,7 @@ HAL_SPI_Transmit (SPI_HandleTypeDef *hspi, uint8_t *pData, uint16_t Size, uint32
         if (dev_ctx.store_one_byte > 255)
           dev_ctx.store_one_byte = 0;
       }
-      break;
+//      break;
   }
   if (dev_ctx.write_byte_flag == true) { 
     printf ("2 write byte 0x%x at address 0x%08x\n", write_byte, dev_ctx.address_memory);
@@ -478,6 +492,9 @@ uint32_t read_id_1e (uint8_t read_id_command, uint8_t read_id_type) { // SEND 0x
 uint32_t write_1_byte (uint32_t address, uint8_t byte) {
   DEBUG;
   enableFlash();
+  SendByte(0x06);
+  disableFlash();
+  enableFlash();
   SendByte(0x02);
   SendByte(address >> 16);
   SendByte(address >> 8);
@@ -564,8 +581,10 @@ main (int argc, char *argv[]) {
   ASSERT_EQUAL_INT32      (helper_function_2 (),  -1, "*** Debug 3 *** - return 0");
   ASSERT_NOT_EQUAL_INT32  (helper_function_2 (),  0,  "*** Debug 4 *** - return 0");
   // WRITE
-  ASSERT_EQUAL_INT32      (write_1_byte (0x00000012, 0xBB), HAL_OK, "write byte 1");
-  ASSERT_EQUAL_UINT8      (*(&dev_ctx.address [0x00000012]), 0xAA, "Check write data");
+  ASSERT_EQUAL_INT32      (write_1_byte (0x00000012, 0x9f), HAL_OK, "write byte 1");
+  uint8_t *mem = &dev_ctx.address;
+  uint8_t t = *(mem+0x12);
+  ASSERT_EQUAL_UINT8      (t, 0xAA, "Check write data");
   return 0;
 }
 
